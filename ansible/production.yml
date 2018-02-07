@@ -1,0 +1,12 @@
+---
+- name: Provison
+  hosts: modus_create # This uses the hosts that we put into the in-memory hosts repository with the add_host module.
+  become: yes
+  become_method: sudo
+  vars:
+  roles:
+    - init
+    - php
+    - php-composer
+    - apache-prod
+    - aglio

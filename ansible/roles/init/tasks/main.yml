@@ -1,0 +1,45 @@
+---
+- name: Update apt
+  become: true
+  become_method: sudo
+  apt: update_cache=yes
+
+- name: Upgrade apt
+  become: true
+  become_method: sudo
+  apt: upgrade=safe
+
+- name: Install System Packages
+  become: true
+  become_method: sudo
+  apt: pkg={{ item.value }}
+  with_dict: "{{ system_packages }}"
+
+- shell: "grep {{ ansible_ssh_user }} /etc/passwd | cut -d ':' -f6"
+  become: true
+  become_method: sudo
+  register: home_dir
+
+- name: Create ~/.bash_profile
+  template:
+      src=bash_profile.j2
+      dest={{ home_dir.stdout }}/.bash_profile
+      owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+
+- name: Create ~/.gitconfig
+  template:
+      src=gitconfig.j2
+      dest={{ home_dir.stdout }}/.gitconfig
+      owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+
+- name: Creates modus_create log directory
+  file: path=/var/log/modus_create state=directory
+
+- name: Create error.log file
+  copy:
+    content: ""
+    dest: /var/log/modus_create/error.log
+    force: no
+    group: sys
+    owner: root
+    mode: 0777

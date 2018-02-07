@@ -1,0 +1,22 @@
+---
+- name: Install Apache
+  become: true
+  become_method: sudo
+  apt: pkg=apache2 state=latest
+
+- name: Enable Apache Modules
+  apache2_module:
+    state: present
+    name: "{{ item.value }}"
+  with_dict: "{{ apache_modules }}"
+
+- name: Add modus_create vhost
+  become: true
+  become_method: sudo
+  template: src=modus_create.prod.conf.tpl dest=/etc/apache2/sites-available/modus_create.prod.conf
+  notify: restart apache-prod
+
+- name: Enable modus_create vhost
+  become: true
+  become_method: sudo
+  shell: a2ensite modus_create.prod.conf

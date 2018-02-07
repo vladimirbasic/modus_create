@@ -1,0 +1,28 @@
+---
+- name: Check if NPM is already installed
+  shell: "aglio --version"
+  register: aglio_exists
+  ignore_errors: True
+
+- name: Download NodeJS
+  shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash
+  when: aglio_exists.stdout|int == 0
+
+- name: Install NodeJS
+  become: true
+  become_method: sudo
+  apt: pkg=nodejs
+  when: aglio_exists.stdout|int == 0
+
+- name: Install NPM
+  become: true
+  become_method: sudo
+  shell: npm install -g npm
+  when: aglio_exists.stdout|int == 0
+
+- name: Creates Aglio cache directory
+  file:
+    path: /usr/lib/node_modules/aglio/node_modules/aglio-theme-olio/cache
+    state: directory
+    mode: 0777
+  when: aglio_exists.stdout|int == 0
