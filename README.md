@@ -105,13 +105,13 @@ cd /var/www/modus_create
 Run Unit tests
 
 ```bash
-composert test-u
+composer test-u
 ```
 
 Run Integration tests
 
 ```bash
-composert test-i
+composer test-i
 ```
 
 ## Coding quality
